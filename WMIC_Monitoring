@@ -1,0 +1,23 @@
+@echo off
+SETLOCAL EnableDelayedExpansion
+
+(For /F "tokens=*" %%A in ('wmic cpu get LoadPercentage /value ^| find "P"') do (
+set %%A
+echo !LoadPercentage!
+))>DriveC_Space.txt
+
+(For /F "tokens=*" %%A in ('wmic OS get FreePhysicalMemory /value ^| find "P"') do (
+set %%A
+FOR /F %%A IN ('powershell %numer% / %denom%') DO SET Total=%%A
+echo C:\ free percentage: PercentFree
+))>MemoryUtilization.txt
+
+(For /F "tokens=*" %%A in ('wmic cpu get LoadPercentage /value ^| find "P"') do (
+set %%A
+echo %%A
+))>LoadPercentage.txt
+
+endlocal
+
+
+
