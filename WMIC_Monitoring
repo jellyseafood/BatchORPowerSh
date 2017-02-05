@@ -1,23 +1,40 @@
+REM use backslash for embedded double quotes in For Loop
+REM use ^ prior to pipe and , in the For Loop
+REM
+
 @echo off
 SETLOCAL EnableDelayedExpansion
 
-(For /F "tokens=*" %%A in ('wmic cpu get LoadPercentage /value ^| find "P"') do (
+del Error.txt 2> NUL
+
+REM Gets the Percentage of the C:\ drive
+For /F "tokens=*" %%A in ('wmic path win32_logicaldisk where "Caption=\"C:\"" get FreeSpace^,Size /value ^| find "="') do (
 set %%A
-echo !LoadPercentage!
-))>DriveC_Space.txt
+)
+FOR /F %%A IN ('powershell \"{0:N0}\" -f ^(%FreeSpace%/%Size%*100^)') DO SET FreePercentage=%%A
+echo C:\ free percentage: %FreePercentage%%%
+if %FreePercentage% LEQ 10 (
+	Echo C:\ free space Problem %FreePercentage% >> Error.txt
+)
 
-(For /F "tokens=*" %%A in ('wmic OS get FreePhysicalMemory /value ^| find "P"') do (
+REM Gets the Memory Utilization
+For /F "tokens=*" %%A in ('wmic OS get FreePhysicalMemory^,TotalVisibleMemorySize /value ^| find "="') do (
 set %%A
-FOR /F %%A IN ('powershell %numer% / %denom%') DO SET Total=%%A
-echo C:\ free percentage: PercentFree
-))>MemoryUtilization.txt
+)
+FOR /F %%A IN ('powershell \"{0:N0}\" -f ^(100-%FreePhysicalMemory%/%TotalVisibleMemorySize%*100^)') DO SET PercentMemUtil=%%A
+echo Memory Utilization: %PercentMemUtil%
+if %PercentMemUtil% GEQ 90 (
+	Echo Mem Util Problem %PercentMemUtil% >> Error.txt
+)
 
-(For /F "tokens=*" %%A in ('wmic cpu get LoadPercentage /value ^| find "P"') do (
+REM Gets the LoadPercentage
+For /F "tokens=*" %%A in ('wmic cpu get LoadPercentage /value ^| find "P"') do (
 set %%A
-echo %%A
-))>LoadPercentage.txt
+)
+echo CPU Load: %LoadPercentage%%%
+if %LoadPercentage% GEQ 30 (
+	Echo Load Problem %LoadPercentage% >> Error.txt
+)
 
-endlocal
 
-
-
+ENDLOCAL
