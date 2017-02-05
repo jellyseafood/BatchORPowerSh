@@ -1,9 +1,10 @@
 REM use backslash for embedded double quotes in For Loop
 REM use ^ prior to pipe and , in the For Loop
-REM
+REM remember to add these parameters below for remote
+REM wmic /node:192.168.43.181 /user:nestor.b.gramata.jr /password:nestor.b.gramatapassword
 
 @echo off
-SETLOCAL EnableDelayedExpansion
+SETLOCAL
 
 del Error.txt 2> NUL
 
@@ -14,7 +15,7 @@ set %%A
 FOR /F %%A IN ('powershell \"{0:N0}\" -f ^(%FreeSpace%/%Size%*100^)') DO SET FreePercentage=%%A
 echo C:\ free percentage: %FreePercentage%%%
 if %FreePercentage% LEQ 10 (
-	Echo C:\ free space Problem %FreePercentage% >> Error.txt
+	Echo C:\ free space Problem %FreePercentage%%% >> Error.txt
 )
 
 REM Gets the Memory Utilization
@@ -22,9 +23,9 @@ For /F "tokens=*" %%A in ('wmic OS get FreePhysicalMemory^,TotalVisibleMemorySiz
 set %%A
 )
 FOR /F %%A IN ('powershell \"{0:N0}\" -f ^(100-%FreePhysicalMemory%/%TotalVisibleMemorySize%*100^)') DO SET PercentMemUtil=%%A
-echo Memory Utilization: %PercentMemUtil%
+echo Memory Utilization: %PercentMemUtil%%%
 if %PercentMemUtil% GEQ 90 (
-	Echo Mem Util Problem %PercentMemUtil% >> Error.txt
+	Echo Mem Util Problem %PercentMemUtil%%% >> Error.txt
 )
 
 REM Gets the LoadPercentage
@@ -33,8 +34,7 @@ set %%A
 )
 echo CPU Load: %LoadPercentage%%%
 if %LoadPercentage% GEQ 30 (
-	Echo Load Problem %LoadPercentage% >> Error.txt
+	Echo Load Problem %LoadPercentage%%% >> Error.txt
 )
-
 
 ENDLOCAL
