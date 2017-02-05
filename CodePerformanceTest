@@ -1,0 +1,6 @@
+$start=get-date
+
+start-process
+
+$stop=get-date
+$start-$stop
