@@ -1,6 +1,9 @@
+#PowerShell script to measure cmd execution speed
+#below is what I used at first
 $start=get-date
-
 cmd /c "<test prog here>"
-
 $stop=get-date
 $start-$stop
+
+#best 1 liner below
+Measure-Command {<test prog here>}
